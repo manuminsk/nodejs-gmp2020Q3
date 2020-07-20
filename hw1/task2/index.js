@@ -1,8 +1,8 @@
 // https://github.com/Keyang/node-csvtojson
 
-const fs = require("fs");
-const csv = require("csvtojson");
-const { pipeline } = require("stream");
+import fs from "fs";
+import csv from "csvtojson";
+import { pipeline } from "stream";
 
 const csvContent = "./csv/";
 
