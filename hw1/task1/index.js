@@ -1,16 +1,21 @@
-import readline from "readline";
+import readline from 'readline';
 
 const rl = readline.createInterface({
-  input: process.stdin,
+  input: process.stdin
 });
 
-rl.on("line", reversString);
+rl.on('line', reversString);
 
 function reversString(input) {
   if (!input || !input.length) {
-    console.log("Process finished...");
+    process.stdout.write('Process finished...');
     process.exit(0);
   }
 
-  console.log(input.split("").reverse().join(""));
+  process.stdout.write(
+    input
+      .split('')
+      .reverse()
+      .join('')
+  );
 }
