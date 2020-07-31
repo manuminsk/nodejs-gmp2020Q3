@@ -3,7 +3,10 @@ import { IControllerBase } from 'src/interfaces/controller-base.interface';
 import { IUser } from 'src/interfaces/user.interface';
 import { container } from 'tsyringe';
 
+import Joi from '@hapi/joi';
+
 import { UserService } from '../services/user.service';
+import { userCreateValidationSchema, userUpdateValidationSchema } from '../validation-schemas/user.schema';
 
 export class UserController implements IControllerBase {
   public router: Router = Router();
@@ -42,11 +45,23 @@ export class UserController implements IControllerBase {
   };
 
   private createUser: (req: Request, res: Response) => void = (req: Request, res: Response) => {
-    res.status(201).send(this.userService.createUser(req.body));
+    const result: Joi.ValidationResult = userCreateValidationSchema.validate(req.body);
+
+    if (result.error) {
+      res.status(400).send(result.error.message);
+    } else {
+      res.status(201).send(this.userService.createUser(req.body));
+    }
   };
 
   private updateUser: (req: Request, res: Response) => void = (req: Request, res: Response) => {
-    res.status(204).send(this.userService.updateUser(req.params.id, req.body));
+    const result: Joi.ValidationResult = userUpdateValidationSchema(req.params.id).validate(req.body);
+
+    if (result.error) {
+      res.status(400).send(result.error.message);
+    } else {
+      res.status(204).send(this.userService.updateUser(req.params.id, req.body));
+    }
   };
 
   private deleteUser: (req: Request, res: Response) => void = (req: Request, res: Response) => {
