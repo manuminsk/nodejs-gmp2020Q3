@@ -1,8 +1,10 @@
 import { IUser } from 'src/interfaces/user.interface';
+import { singleton } from 'tsyringe';
 import { v4 } from 'uuid';
 
+@singleton()
 export class UserService {
-  private static users: IUser[] = [
+  private users: IUser[] = [
     {
       login: 'user1',
       password: 'password',
@@ -26,15 +28,15 @@ export class UserService {
     },
   ];
 
-  public static getUserById(id: string): IUser | undefined {
+  public getUserById(id: string): IUser | undefined {
     return this.users.find(item => item.id === id);
   }
 
-  public static getUserList(): IUser[] {
+  public getUserList(): IUser[] {
     return this.users.filter(item => !item.isDeleted);
   }
 
-  public static getAutoSuggestUsers(loginSubstring: string, limit: number): IUser[] {
+  public getAutoSuggestUsers(loginSubstring: string, limit: number): IUser[] {
     let users: IUser[] = this.getUserList();
 
     if (loginSubstring && loginSubstring.length) {
@@ -48,7 +50,7 @@ export class UserService {
     return users;
   }
 
-  public static updateUser(id: string, userUpdates: IUser): IUser {
+  public updateUser(id: string, userUpdates: IUser): IUser {
     const currentUser: IUser = this.users.find(item => item.id === id) as IUser;
 
     if (currentUser) {
@@ -58,7 +60,7 @@ export class UserService {
     return currentUser;
   }
 
-  public static createUser(user: IUser): IUser {
+  public createUser(user: IUser): IUser {
     const newUser: IUser = {
       ...user,
       id: v4(),
@@ -69,7 +71,7 @@ export class UserService {
     return newUser;
   }
 
-  public static deleteUser(id: string): IUser {
+  public deleteUser(id: string): IUser {
     const user: IUser = this.users.find(item => item.id === id) as IUser;
 
     if (user) {

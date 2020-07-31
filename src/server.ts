@@ -1,4 +1,5 @@
-import * as bodyParser from 'body-parser';
+import { json } from 'express';
+import 'reflect-metadata';
 
 import { App } from './app';
 import { HomeController } from './controllers/home.controller';
@@ -10,7 +11,7 @@ const root: string = '/api';
 const app: App = new App({
   port: 5000,
   controllers: [new HomeController(`${root}`), new UserController(`${root}/users`)],
-  middleWares: [bodyParser.json(), bodyParser.urlencoded({ extended: true }), loggerMiddleware],
+  middleWares: [json(), loggerMiddleware],
 });
 
 app.listen();
