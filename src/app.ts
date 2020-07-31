@@ -1,15 +1,17 @@
 import express, { Application } from 'express';
 
+import { IControllerBase } from './interfaces/controller-base.interface';
+
 export class App {
   public app: Application;
   public port: number;
 
-  constructor(appInit: { port: number; middleWares: any; controllers: any }) {
+  constructor(config: { port: number; middleWares: any; controllers: any }) {
     this.app = express();
-    this.port = appInit.port;
+    this.port = config.port;
 
-    this.middlewares(appInit.middleWares);
-    this.routes(appInit.controllers);
+    this.middlewares(config.middleWares);
+    this.routes(config.controllers);
   }
 
   private middlewares(middleWares: { forEach: (arg0: (middleWare: any) => void) => void }): void {
@@ -18,9 +20,10 @@ export class App {
     });
   }
 
-  private routes(controllers: { forEach: (arg0: (controller: any) => void) => void }): void {
+  private routes(controllers: { forEach: (arg0: (controller: IControllerBase) => void) => void }): void {
     controllers.forEach(controller => {
-      this.app.use('/', controller.router);
+      console.log('controller', controller.path);
+      this.app.use(controller.path, controller.router);
     });
   }
 
