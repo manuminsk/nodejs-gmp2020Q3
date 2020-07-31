@@ -6,7 +6,7 @@ export class App {
   public app: Application;
   public port: number;
 
-  constructor(config: { port: number; middleWares: any; controllers: any }) {
+  constructor(config: { port: number; middleWares: any; controllers: IControllerBase[] }) {
     this.app = express();
     this.port = config.port;
 
@@ -22,7 +22,6 @@ export class App {
 
   private routes(controllers: { forEach: (arg0: (controller: IControllerBase) => void) => void }): void {
     controllers.forEach(controller => {
-      console.log('controller', controller.path);
       this.app.use(controller.path, controller.router);
     });
   }
