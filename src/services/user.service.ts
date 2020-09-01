@@ -1,6 +1,7 @@
-import { IUser } from 'src/interfaces/user.interface';
 import { singleton } from 'tsyringe';
 import { v4 } from 'uuid';
+
+import { IUser } from '../interfaces/user.interface';
 
 @singleton()
 export class UserService {

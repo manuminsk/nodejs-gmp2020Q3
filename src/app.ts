@@ -10,11 +10,11 @@ export class App {
     this.app = express();
     this.port = config.port;
 
-    this.middlewares(config.middleWares);
+    this.middleWares(config.middleWares);
     this.routes(config.controllers);
   }
 
-  private middlewares(middleWares: { forEach: (arg0: (middleWare: any) => void) => void }): void {
+  private middleWares(middleWares: { forEach: (arg0: (middleWare: any) => void) => void }): void {
     middleWares.forEach(middleWare => {
       this.app.use(middleWare);
     });

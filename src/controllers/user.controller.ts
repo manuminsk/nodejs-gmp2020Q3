@@ -1,10 +1,11 @@
 import { Request, Response, Router } from 'express';
-import { IControllerBase } from 'src/interfaces/controller-base.interface';
-import { IUser } from 'src/interfaces/user.interface';
 import { container } from 'tsyringe';
 
 import Joi from '@hapi/joi';
 
+import { ResponseCode } from '../common/common.const';
+import { IControllerBase } from '../interfaces/controller-base.interface';
+import { IUser } from '../interfaces/user.interface';
 import { UserService } from '../services/user.service';
 import { userCreateValidationSchema, userUpdateValidationSchema } from '../validation-schemas/user.schema';
 
@@ -38,9 +39,9 @@ export class UserController implements IControllerBase {
     const user: IUser | undefined = this.userService.getUserById(req.params.id);
 
     if (user) {
-      res.status(200).send(user);
+      res.status(ResponseCode.Success).send(user);
     } else {
-      res.sendStatus(404);
+      res.sendStatus(ResponseCode.NotFound);
     }
   };
 
@@ -48,9 +49,9 @@ export class UserController implements IControllerBase {
     const result: Joi.ValidationResult = userCreateValidationSchema.validate(req.body);
 
     if (result.error) {
-      res.status(400).send(result.error.message);
+      res.status(ResponseCode.BadRequest).send(result.error.message);
     } else {
-      res.status(201).send(this.userService.createUser(req.body));
+      res.status(ResponseCode.Created).send(this.userService.createUser(req.body));
     }
   };
 
@@ -58,13 +59,13 @@ export class UserController implements IControllerBase {
     const result: Joi.ValidationResult = userUpdateValidationSchema(req.params.id).validate(req.body);
 
     if (result.error) {
-      res.status(400).send(result.error.message);
+      res.status(ResponseCode.BadRequest).send(result.error.message);
     } else {
-      res.status(204).send(this.userService.updateUser(req.params.id, req.body));
+      res.status(ResponseCode.NoContent).send(this.userService.updateUser(req.params.id, req.body));
     }
   };
 
   private deleteUser: (req: Request, res: Response) => void = (req: Request, res: Response) => {
-    res.status(204).send(this.userService.deleteUser(req.params.id));
+    res.status(ResponseCode.NoContent).send(this.userService.deleteUser(req.params.id));
   };
 }
