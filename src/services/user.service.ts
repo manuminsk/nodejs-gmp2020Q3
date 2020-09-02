@@ -1,84 +1,57 @@
+import { Op } from 'sequelize';
 import { singleton } from 'tsyringe';
-import { v4 } from 'uuid';
 
-import { IUser } from '../interfaces/user.interface';
+import { IUser } from '../models/user.interface';
+import { UserModel } from '../models/user.model';
 
 @singleton()
 export class UserService {
-  private users: IUser[] = [
-    {
-      login: 'user1',
-      password: 'password',
-      age: 32,
-      isDeleted: false,
-      id: '8fb1ddce-5baa-464b-85e4-6e300ba20efc',
-    },
-    {
-      login: 'user2',
-      password: 'password',
-      age: 32,
-      isDeleted: false,
-      id: 'd84c597f-ef35-49b7-85d2-e41e26608174',
-    },
-    {
-      login: 'user3',
-      password: 'password',
-      age: 32,
-      isDeleted: false,
-      id: '28f57fd7-44e2-4700-9624-030a664676cb',
-    },
-  ];
+  public async getUserById(id: string): Promise<IUser | null> {
+    const user: IUser | null = await UserModel.findByPk(id);
 
-  public getUserById(id: string): IUser | undefined {
-    return this.users.find(item => item.id === id);
+    return user;
   }
 
-  public getUserList(): IUser[] {
-    return this.users.filter(item => !item.isDeleted);
-  }
-
-  public getAutoSuggestUsers(loginSubstring: string, limit: number): IUser[] {
-    let users: IUser[] = this.getUserList();
-
-    if (loginSubstring && loginSubstring.length) {
-      users = users.filter(item => item.login.includes(loginSubstring));
-    }
-
-    if (limit) {
-      users = users.slice(0, limit);
-    }
+  public async getAutoSuggestUsers(loginSubstring: string, limit: number): Promise<IUser[]> {
+    const users: IUser[] = await UserModel.findAll({
+      where: {
+        isDeleted: false,
+        login: {
+          [Op.like]: `%${loginSubstring}`,
+        },
+      },
+      limit,
+    });
 
     return users;
   }
 
-  public updateUser(id: string, userUpdates: IUser): IUser {
-    const currentUser: IUser = this.users.find(item => item.id === id) as IUser;
+  public async updateUser(id: string, userUpdates: IUser): Promise<IUser> {
+    const result: [number, IUser[]] = await UserModel.update(userUpdates, {
+      where: {
+        id,
+      },
+    });
 
-    if (currentUser) {
-      Object.assign(currentUser, userUpdates);
-    }
-
-    return currentUser;
+    return result[1][0]; // TODO: find better solution
   }
 
-  public createUser(user: IUser): IUser {
-    const newUser: IUser = {
-      ...user,
-      id: v4(),
-    };
-
-    this.users.push(newUser);
+  public async createUser(user: IUser): Promise<IUser> {
+    const newUser: IUser = await UserModel.create(user);
 
     return newUser;
   }
 
-  public deleteUser(id: string): IUser {
-    const user: IUser = this.users.find(item => item.id === id) as IUser;
+  public async deleteUser(id: string): Promise<IUser> {
+    const result: [number, IUser[]] = await UserModel.update(
+      { isDeleted: true },
+      {
+        where: {
+          id,
+        },
+      },
+    );
 
-    if (user) {
-      Object.assign(user, { ...user, isDeleted: true });
-    }
-
-    return user;
+    return result[1][0]; // TODO: find better solution
   }
 }

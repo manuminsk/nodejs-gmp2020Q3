@@ -1,7 +1,7 @@
 import express, { Application } from 'express';
 import { Sequelize } from 'sequelize';
 
-import { IControllerBase } from './interfaces/controller-base.interface';
+import { IControllerBase } from './controllers/controller-base.interface';
 
 export class App {
   public app: Application;
@@ -34,6 +34,8 @@ export class App {
       await this.db.authenticate();
       // eslint-disable-next-line no-console
       console.log('Connection has been established successfully.');
+
+      await this.db.sync({ alter: true });
 
       this.app.listen(this.port, () => {
         // eslint-disable-next-line no-console

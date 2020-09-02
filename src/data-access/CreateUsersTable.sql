@@ -6,6 +6,17 @@ CREATE TABLE users (
   IsDeleted boolean
 );
 
+-- CREATE TABLE IF NOT EXISTS users (
+--   id UUID,
+--   login VARCHAR(50) NOT NULL,
+--   password VARCHAR(50) NOT NULL,
+--   age INTEGER,
+--   isDeleted BOOLEAN DEFAULT false,
+--   createdAt TIMESTAMP WITH TIME ZONE NOT NULL,
+--   updatedAt TIMESTAMP WITH TIME ZONE NOT NULL,
+--   PRIMARY KEY (id)
+-- );
+
 INSERT INTO
   users
 VALUES

@@ -1,7 +1,7 @@
 import { Request, Response, Router } from 'express';
 
 import { ResponseCode } from '../common/common.const';
-import { IControllerBase } from '../interfaces/controller-base.interface';
+import { IControllerBase } from './controller-base.interface';
 
 export class HomeController implements IControllerBase {
   public router: Router = Router();
