@@ -26,14 +26,14 @@ export class UserService {
     return users;
   }
 
-  public async updateUser(id: string, userUpdates: IUser): Promise<IUser> {
-    const result: [number, IUser[]] = await UserModel.update(userUpdates, {
+  public async updateUser(id: string, userUpdates: IUser): Promise<IUser | null | undefined> {
+    const [numberOfItems, updatedItems]: [number, IUser[]] = await UserModel.update(userUpdates, {
       where: {
         id,
       },
     });
 
-    return result[1][0]; // TODO: find better solution
+    return numberOfItems ? updatedItems.shift() : null;
   }
 
   public async createUser(user: IUser): Promise<IUser> {
@@ -42,8 +42,8 @@ export class UserService {
     return newUser;
   }
 
-  public async deleteUser(id: string): Promise<IUser> {
-    const result: [number, IUser[]] = await UserModel.update(
+  public async deleteUser(id: string): Promise<IUser | null | undefined> {
+    const [numberOfItems, updatedItems]: [number, IUser[]] = await UserModel.update(
       { isDeleted: true },
       {
         where: {
@@ -52,6 +52,6 @@ export class UserService {
       },
     );
 
-    return result[1][0]; // TODO: find better solution
+    return numberOfItems ? updatedItems.shift() : null;
   }
 }
