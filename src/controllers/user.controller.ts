@@ -4,10 +4,10 @@ import { container } from 'tsyringe';
 import Joi from '@hapi/joi';
 
 import { ResponseCode } from '../common/common.const';
-import { IControllerBase } from '../interfaces/controller-base.interface';
-import { IUser } from '../interfaces/user.interface';
+import { IUser } from '../models/user.interface';
 import { UserService } from '../services/user.service';
 import { userCreateValidationSchema, userUpdateValidationSchema } from '../validation-schemas/user.schema';
+import { IControllerBase } from './controller-base.interface';
 
 export class UserController implements IControllerBase {
   public router: Router = Router();
@@ -26,17 +26,17 @@ export class UserController implements IControllerBase {
     this.router.put('/:id', this.updateUser);
   }
 
-  private getUserList: (req: Request, res: Response) => void = (req: Request, res: Response) => {
-    res.send(
-      this.userService.getAutoSuggestUsers(
-        req.query.loginSubstring ? req.query.loginSubstring.toString() : '',
-        Number(req.query.limit),
-      ),
+  private getUserList: (req: Request, res: Response) => void = async (req: Request, res: Response) => {
+    const users: IUser[] = await this.userService.getAutoSuggestUsers(
+      req.query.loginSubstring ? req.query.loginSubstring.toString() : '',
+      Number(req.query.limit ?? 10),
     );
+
+    res.status(ResponseCode.Success).send(users);
   };
 
-  private getUserById: (req: Request, res: Response) => void = (req: Request, res: Response) => {
-    const user: IUser | undefined = this.userService.getUserById(req.params.id);
+  private getUserById: (req: Request, res: Response) => void = async (req: Request, res: Response) => {
+    const user: IUser | null = await this.userService.getUserById(req.params.id);
 
     if (user) {
       res.status(ResponseCode.Success).send(user);
