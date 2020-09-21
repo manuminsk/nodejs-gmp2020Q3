@@ -1,7 +1,9 @@
 import { singleton } from 'tsyringe';
 
+import { sequelize } from '../data-access/database';
 import { IGroup } from '../models/group.interface';
 import { GroupModel } from '../models/group.model';
+import { UserGroupModel } from '../models/user.model';
 
 @singleton()
 export class GroupService {
@@ -41,5 +43,26 @@ export class GroupService {
     });
 
     return deletedRowsCount;
+  }
+
+  public async addUsersToGroup(id: string, userIds: string[]): Promise<void> {
+    try {
+      await sequelize.transaction(async t => {
+        return Promise.all(
+          (userIds || []).map(async userId => {
+            return UserGroupModel.create(
+              {
+                UserId: userId,
+                GroupId: id,
+              },
+              { transaction: t },
+            );
+          }),
+        );
+      });
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.log(error);
+    }
   }
 }

@@ -22,6 +22,7 @@ export class GroupController implements IControllerBase {
     this.router.delete('/:id', this.deleteGroup);
     this.router.get('/:id', this.getGroupById);
     this.router.get('/', this.getGroupList);
+    this.router.post('/:id/add-users', this.addUsersToGroup);
     this.router.post('/', this.createGroup);
     this.router.put('/:id', this.updateGroup);
   }
@@ -64,5 +65,9 @@ export class GroupController implements IControllerBase {
 
   private deleteGroup: (req: Request, res: Response) => void = (req: Request, res: Response) => {
     res.status(ResponseCode.NoContent).send(this.groupService.deleteGroup(req.params.id));
+  };
+
+  private addUsersToGroup: (req: Request, res: Response) => void = (req: Request, res: Response) => {
+    res.status(ResponseCode.NoContent).send(this.groupService.addUsersToGroup(req.params.id, req.body.users));
   };
 }

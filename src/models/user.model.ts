@@ -47,5 +47,19 @@ UserModel.init(
   },
 );
 
-UserModel.belongsToMany(GroupModel, { through: 'user_group' });
-GroupModel.belongsToMany(UserModel, { through: 'user_group' });
+// eslint-disable-next-line @typescript-eslint/typedef
+export const UserGroupModel = sequelize.define(
+  'UserGroup',
+  {
+    id: {
+      type: DataTypes.UUID,
+      defaultValue: UUIDV4,
+      primaryKey: true,
+      allowNull: false,
+    },
+  },
+  { tableName: 'user_group', timestamps: false },
+);
+
+UserModel.belongsToMany(GroupModel, { through: UserGroupModel });
+GroupModel.belongsToMany(UserModel, { through: UserGroupModel });
