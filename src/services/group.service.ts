@@ -19,14 +19,12 @@ export class GroupService {
     return groups;
   }
 
-  public async updateGroup(id: string, groupUpdates: IGroup): Promise<IGroup | null | undefined> {
-    const [numberOfItems, updatedItems]: [number, IGroup[]] = await GroupModel.update(groupUpdates, {
+  public async updateGroup(id: string, groupUpdates: IGroup): Promise<void> {
+    await GroupModel.update(groupUpdates, {
       where: {
         id,
       },
     });
-
-    return numberOfItems ? updatedItems.shift() : null;
   }
 
   public async createGroup(group: IGroup): Promise<IGroup> {
@@ -48,16 +46,12 @@ export class GroupService {
   public async addUsersToGroup(id: string, userIds: string[]): Promise<void> {
     try {
       await sequelize.transaction(async t => {
-        return Promise.all(
-          (userIds || []).map(async userId => {
-            return UserGroupModel.create(
-              {
-                UserId: userId,
-                GroupId: id,
-              },
-              { transaction: t },
-            );
-          }),
+        return UserGroupModel.bulkCreate(
+          userIds.map(userId => ({
+            UserId: userId,
+            GroupId: id,
+          })),
+          { transaction: t },
         );
       });
     } catch (error) {
