@@ -2,6 +2,7 @@ import express, { Application } from 'express';
 import { Sequelize } from 'sequelize';
 
 import { IControllerBase } from './controllers/controller-base.interface';
+import { errorMiddleware } from './middlewares/logger';
 
 export class App {
   public app: Application;
@@ -15,6 +16,7 @@ export class App {
 
     this.middleWares(config.middleWares);
     this.routes(config.controllers);
+    this.app.use(errorMiddleware);
   }
 
   private middleWares(middleWares: { forEach: (arg0: (middleWare: any) => void) => void }): void {
