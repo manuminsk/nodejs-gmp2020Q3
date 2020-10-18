@@ -1,4 +1,3 @@
-import { json } from 'express';
 import 'reflect-metadata';
 
 import { App } from './app';
@@ -18,7 +17,7 @@ const app: App = new App({
     new UserController(`${root}/users`),
     new GroupController(`${root}/groups`),
   ],
-  middleWares: [json(), loggerMiddleware],
+  middleWares: [loggerMiddleware],
   db: sequelize,
 });
 
