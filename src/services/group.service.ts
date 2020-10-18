@@ -56,7 +56,7 @@ export class GroupService {
       });
     } catch (error) {
       // eslint-disable-next-line no-console
-      console.log(error);
+      throw new Error(error);
     }
   }
 }

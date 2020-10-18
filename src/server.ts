@@ -2,6 +2,7 @@ import { json } from 'express';
 import 'reflect-metadata';
 
 import { App } from './app';
+import { logger } from './common/logger';
 import { GroupController } from './controllers/group.controller';
 import { HomeController } from './controllers/home.controller';
 import { UserController } from './controllers/user.controller';
@@ -22,3 +23,11 @@ const app: App = new App({
 });
 
 app.listen();
+
+process.on('uncaughtException', error => {
+  logger.error(`uncaughtException: ${JSON.stringify(error)}`);
+});
+
+process.on('unhandledRejection', error => {
+  logger.error(`unhandledRejection: ${JSON.stringify(error)}`);
+});
