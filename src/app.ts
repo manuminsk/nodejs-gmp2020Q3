@@ -3,7 +3,7 @@ import express, { Application, json } from 'express';
 import { Sequelize } from 'sequelize';
 
 import { IControllerBase } from './controllers/controller-base.interface';
-import { errorMiddleware } from './middlewares/logger';
+import { errorMiddleware } from './middlewares/logger.middleware';
 
 export class App {
   public app: Application;

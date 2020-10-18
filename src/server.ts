@@ -6,7 +6,7 @@ import { GroupController } from './controllers/group.controller';
 import { HomeController } from './controllers/home.controller';
 import { UserController } from './controllers/user.controller';
 import { sequelize } from './data-access/database';
-import { loggerMiddleware } from './middlewares/logger';
+import { loggerMiddleware } from './middlewares/logger.middleware';
 
 const root: string = '/api';
 

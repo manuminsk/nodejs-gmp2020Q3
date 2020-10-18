@@ -5,6 +5,7 @@ import Joi from '@hapi/joi';
 
 import { ResponseCode } from '../common/common.const';
 import { logger } from '../common/logger';
+import { authMiddleware } from '../middlewares/auth.middleware';
 import { IUser } from '../models/user.interface';
 import { UserService } from '../services/user.service';
 import { userCreateValidationSchema, userUpdateValidationSchema } from '../validation-schemas/user.schema';
@@ -20,12 +21,29 @@ export class UserController implements IControllerBase {
   }
 
   public initRoutes(): void {
-    this.router.delete('/:id', this.deleteUser);
-    this.router.get('/:id', this.getUserById);
-    this.router.get('/', this.getUserList);
-    this.router.post('/', this.createUser);
-    this.router.put('/:id', this.updateUser);
+    this.router.delete('/:id', authMiddleware, this.deleteUser);
+    this.router.get('/:id', authMiddleware, this.getUserById);
+    this.router.get('/', authMiddleware, this.getUserList);
+    this.router.post('/', authMiddleware, this.createUser);
+    this.router.post('/login', this.login);
+    this.router.put('/:id', authMiddleware, this.updateUser);
   }
+
+  private login: (req: Request, res: Response) => void = async (req: Request, res: Response) => {
+    const { username, password }: { username: string; password: string } = req.body;
+
+    try {
+      const token: string | null = await this.userService.login(username, password);
+
+      if (token) {
+        res.status(ResponseCode.Success).send({ access_token: token });
+      } else {
+        res.status(ResponseCode.Unauthorized).send();
+      }
+    } catch (error) {
+      logger.error(`login(${username}, ${password}): ${JSON.stringify(error)}`);
+    }
+  };
 
   private getUserList: (req: Request, res: Response) => void = async (req: Request, res: Response) => {
     const loginSubstring: string = req.query.loginSubstring ? req.query.loginSubstring.toString() : '';
@@ -67,7 +85,7 @@ export class UserController implements IControllerBase {
     }
   };
 
-  private updateUser: (req: Request, res: Response) => void = (req: Request, res: Response) => {
+  private updateUser: (req: Request, res: Response) => void = async (req: Request, res: Response) => {
     try {
       const result: Joi.ValidationResult = userUpdateValidationSchema(req.params.id).validate(req.body);
 

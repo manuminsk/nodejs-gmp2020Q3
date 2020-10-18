@@ -5,6 +5,7 @@ import Joi from '@hapi/joi';
 
 import { ResponseCode } from '../common/common.const';
 import { logger } from '../common/logger';
+import { authMiddleware } from '../middlewares/auth.middleware';
 import { IGroup } from '../models/group.interface';
 import { GroupService } from '../services/group.service';
 import { groupCreateValidationSchema, groupUpdateValidationSchema } from '../validation-schemas/group.schema';
@@ -20,12 +21,12 @@ export class GroupController implements IControllerBase {
   }
 
   public initRoutes(): void {
-    this.router.delete('/:id', this.deleteGroup);
-    this.router.get('/:id', this.getGroupById);
-    this.router.get('/', this.getGroupList);
-    this.router.post('/:id/add-users', this.addUsersToGroup);
-    this.router.post('/', this.createGroup);
-    this.router.put('/:id', this.updateGroup);
+    this.router.delete('/:id', authMiddleware, this.deleteGroup);
+    this.router.get('/:id', authMiddleware, this.getGroupById);
+    this.router.get('/', authMiddleware, this.getGroupList);
+    this.router.post('/:id/add-users', authMiddleware, this.addUsersToGroup);
+    this.router.post('/', authMiddleware, this.createGroup);
+    this.router.put('/:id', authMiddleware, this.updateGroup);
   }
 
   private getGroupList: (req: Request, res: Response) => void = async (req: Request, res: Response) => {
