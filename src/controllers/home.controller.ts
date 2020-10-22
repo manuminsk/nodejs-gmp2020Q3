@@ -1,6 +1,6 @@
 import { Request, Response, Router } from 'express';
+import status from 'http-status';
 
-import { ResponseCode } from '../common/common.const';
 import { IControllerBase } from './controller-base.interface';
 
 export class HomeController implements IControllerBase {
@@ -15,6 +15,6 @@ export class HomeController implements IControllerBase {
   }
 
   private index: (req: Request, res: Response) => void = (req: Request, res: Response) => {
-    res.status(ResponseCode.Success).send({ message: 'Hello World!' });
+    res.status(status.OK).send({ message: 'Hello World!' });
   };
 }

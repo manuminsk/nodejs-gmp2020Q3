@@ -1,5 +1,7 @@
 import winston from 'winston';
 
+import { CommonConfig } from './common.config';
+
 export const logger: winston.Logger = winston.createLogger({
   level: 'info',
   format: winston.format.simple(),
@@ -9,6 +11,6 @@ export const logger: winston.Logger = winston.createLogger({
   ],
 });
 
-if (process.env.NODE_ENV !== 'production') {
+if (CommonConfig.NODE_ENV !== 'production') {
   logger.add(new winston.transports.Console());
 }

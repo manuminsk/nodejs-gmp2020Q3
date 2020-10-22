@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken';
 import { Op } from 'sequelize';
 import { singleton } from 'tsyringe';
 
+import { CommonConfig } from '../common/common.config';
 import { IUser } from '../models/user.interface';
 import { UserModel } from '../models/user.model';
 
@@ -11,7 +12,7 @@ export class UserService {
   private jwtSecret: string;
 
   constructor() {
-    this.jwtSecret = process.env.JWT_SECRET as string;
+    this.jwtSecret = CommonConfig.JWT_SECRET;
   }
 
   public async login(username: string, password: string): Promise<string | null> {

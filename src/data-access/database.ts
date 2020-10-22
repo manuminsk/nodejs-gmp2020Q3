@@ -1,10 +1,5 @@
-import * as dotenv from 'dotenv';
 import { Sequelize } from 'sequelize';
 
-const result: dotenv.DotenvConfigOutput = dotenv.config();
+import { CommonConfig } from '../common/common.config';
 
-if (result.error) {
-  throw result.error;
-}
-
-export const sequelize: Sequelize = new Sequelize(process.env.DB_CONNECTION_STRING as string);
+export const sequelize: Sequelize = new Sequelize(CommonConfig.DB_CONNECTION_STRING);
