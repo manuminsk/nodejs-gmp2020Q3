@@ -1,13 +1,18 @@
-import express, { Application } from 'express';
+import cors, { CorsOptions } from 'cors';
+import express, { Application, json } from 'express';
 import { Sequelize } from 'sequelize';
 
 import { IControllerBase } from './controllers/controller-base.interface';
-import { errorMiddleware } from './middlewares/logger';
+import { errorMiddleware } from './middlewares/logger.middleware';
 
 export class App {
   public app: Application;
   public port: number;
   public db: Sequelize;
+  public corsOptions: CorsOptions = {
+    origin: '*',
+    optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
+  };
 
   constructor(config: { port: number; middleWares: any; controllers: IControllerBase[]; db: Sequelize }) {
     this.app = express();
@@ -20,6 +25,9 @@ export class App {
   }
 
   private middleWares(middleWares: { forEach: (arg0: (middleWare: any) => void) => void }): void {
+    this.app.use(cors(this.corsOptions));
+    this.app.use(json());
+
     middleWares.forEach(middleWare => {
       this.app.use(middleWare);
     });

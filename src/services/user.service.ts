@@ -1,11 +1,39 @@
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
 import { Op } from 'sequelize';
 import { singleton } from 'tsyringe';
 
+import { CommonConfig } from '../common/common.config';
 import { IUser } from '../models/user.interface';
 import { UserModel } from '../models/user.model';
 
 @singleton()
 export class UserService {
+  private jwtSecret: string;
+
+  constructor() {
+    this.jwtSecret = CommonConfig.JWT_SECRET;
+  }
+
+  public async login(username: string, password: string): Promise<string | null> {
+    const user: IUser | null = await UserModel.findOne({
+      where: {
+        login: username,
+      },
+    });
+
+    if (user) {
+      const compareResult: boolean = await bcrypt.compare(password, user.password);
+
+      if (compareResult) {
+        const token: string = jwt.sign({ sid: user.id }, this.jwtSecret, { expiresIn: '1h' });
+        return token;
+      }
+    }
+
+    return null;
+  }
+
   public async getUserById(id: string): Promise<IUser | null> {
     const user: IUser | null = await UserModel.findByPk(id);
 
@@ -26,18 +54,27 @@ export class UserService {
     return users;
   }
 
-  public async updateUser(id: string, userUpdates: IUser): Promise<IUser | null | undefined> {
-    const [numberOfItems, updatedItems]: [number, IUser[]] = await UserModel.update(userUpdates, {
-      where: {
-        id,
-      },
-    });
+  public async updateUser(id: string, userUpdates: IUser): Promise<void> {
+    const salt: string = await bcrypt.genSalt(10);
+    const hash: string = await bcrypt.hash(userUpdates.password, salt);
 
-    return numberOfItems ? updatedItems.shift() : null;
+    await UserModel.update(
+      {
+        ...userUpdates,
+        password: hash,
+      },
+      {
+        where: {
+          id,
+        },
+      },
+    );
   }
 
   public async createUser(user: IUser): Promise<IUser> {
-    const newUser: IUser = await UserModel.create(user);
+    const salt: string = await bcrypt.genSalt(10);
+    const hash: string = await bcrypt.hash(user.password, salt);
+    const newUser: IUser = await UserModel.create({ ...user, password: hash });
 
     return newUser;
   }
