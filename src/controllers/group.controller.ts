@@ -7,10 +7,7 @@ import { logger } from '../common/logger';
 import { authMiddleware } from '../middlewares/auth.middleware';
 import { IGroup } from '../models/group.interface';
 import { GroupService } from '../services/group.service';
-import {
-  groupCreateValidationSchema,
-  groupUpdateValidationSchema,
-} from '../validation-schemas/group.schema';
+import { groupCreateValidationSchema, groupUpdateValidationSchema } from '../validation-schemas/group.schema';
 import { IControllerBase } from './controller-base.interface';
 
 export class GroupController implements IControllerBase {

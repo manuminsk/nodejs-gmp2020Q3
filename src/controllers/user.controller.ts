@@ -7,10 +7,7 @@ import { logger } from '../common/logger';
 import { authMiddleware } from '../middlewares/auth.middleware';
 import { IUser } from '../models/user.interface';
 import { UserService } from '../services/user.service';
-import {
-  userCreateValidationSchema,
-  userUpdateValidationSchema,
-} from '../validation-schemas/user.schema';
+import { userCreateValidationSchema, userUpdateValidationSchema } from '../validation-schemas/user.schema';
 import { IControllerBase } from './controller-base.interface';
 
 export class UserController implements IControllerBase {
