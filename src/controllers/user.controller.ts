@@ -1,6 +1,5 @@
 import { Request, Response, Router } from 'express';
 import status from 'http-status';
-import { container } from 'tsyringe';
 
 import Joi from '@hapi/joi';
 
@@ -13,12 +12,10 @@ import { IControllerBase } from './controller-base.interface';
 
 export class UserController implements IControllerBase {
   public router: Router = Router();
-  private userService: UserService;
   private defaultLimitValue: number = 10;
 
-  constructor(public readonly path: string) {
+  constructor(public readonly path: string, public readonly userService: UserService) {
     this.initRoutes();
-    this.userService = container.resolve(UserService);
   }
 
   public initRoutes(): void {
@@ -30,7 +27,7 @@ export class UserController implements IControllerBase {
     this.router.put('/:id', authMiddleware, this.updateUser);
   }
 
-  private login: (req: Request, res: Response) => void = async (req: Request, res: Response) => {
+  public login: (req: Request, res: Response) => void = async (req: Request, res: Response) => {
     const { username, password }: { username: string; password: string } = req.body;
 
     try {
@@ -46,8 +43,13 @@ export class UserController implements IControllerBase {
     }
   };
 
-  private getUserList: (req: Request, res: Response) => void = async (req: Request, res: Response) => {
-    const loginSubstring: string = req.query.loginSubstring ? req.query.loginSubstring.toString() : '';
+  public getUserList: (req: Request, res: Response) => void = async (
+    req: Request,
+    res: Response,
+  ) => {
+    const loginSubstring: string = req.query.loginSubstring
+      ? req.query.loginSubstring.toString()
+      : '';
     const limit: number = Number(req.query.limit ?? this.defaultLimitValue);
     try {
       const users: IUser[] = await this.userService.getAutoSuggestUsers(loginSubstring, limit);
@@ -58,7 +60,10 @@ export class UserController implements IControllerBase {
     }
   };
 
-  private getUserById: (req: Request, res: Response) => void = async (req: Request, res: Response) => {
+  public getUserById: (req: Request, res: Response) => void = async (
+    req: Request,
+    res: Response,
+  ) => {
     try {
       const user: IUser | null = await this.userService.getUserById(req.params.id);
 
@@ -72,7 +77,7 @@ export class UserController implements IControllerBase {
     }
   };
 
-  private createUser: (req: Request, res: Response) => void = (req: Request, res: Response) => {
+  public createUser: (req: Request, res: Response) => void = (req: Request, res: Response) => {
     try {
       const result: Joi.ValidationResult = userCreateValidationSchema.validate(req.body);
 
@@ -86,9 +91,14 @@ export class UserController implements IControllerBase {
     }
   };
 
-  private updateUser: (req: Request, res: Response) => void = async (req: Request, res: Response) => {
+  public updateUser: (req: Request, res: Response) => void = async (
+    req: Request,
+    res: Response,
+  ) => {
     try {
-      const result: Joi.ValidationResult = userUpdateValidationSchema(req.params.id).validate(req.body);
+      const result: Joi.ValidationResult = userUpdateValidationSchema(req.params.id).validate(
+        req.body,
+      );
 
       if (result.error) {
         res.status(status.BAD_REQUEST).send(result.error.message);
@@ -100,7 +110,7 @@ export class UserController implements IControllerBase {
     }
   };
 
-  private deleteUser: (req: Request, res: Response) => void = (req: Request, res: Response) => {
+  public deleteUser: (req: Request, res: Response) => void = (req: Request, res: Response) => {
     try {
       res.status(status.NO_CONTENT).send(this.userService.deleteUser(req.params.id));
     } catch (error) {

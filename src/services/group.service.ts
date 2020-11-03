@@ -1,11 +1,8 @@
-import { singleton } from 'tsyringe';
-
 import { sequelize } from '../data-access/database';
 import { IGroup } from '../models/group.interface';
 import { GroupModel } from '../models/group.model';
 import { UserGroupModel } from '../models/user.model';
 
-@singleton()
 export class GroupService {
   public async getGroupById(id: string): Promise<IGroup | null> {
     const group: IGroup | null = await GroupModel.findByPk(id);

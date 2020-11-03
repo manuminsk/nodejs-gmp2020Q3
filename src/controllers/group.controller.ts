@@ -1,6 +1,5 @@
 import { Request, Response, Router } from 'express';
 import status from 'http-status';
-import { container } from 'tsyringe';
 
 import Joi from '@hapi/joi';
 
@@ -13,11 +12,9 @@ import { IControllerBase } from './controller-base.interface';
 
 export class GroupController implements IControllerBase {
   public router: Router = Router();
-  private groupService: GroupService;
 
-  constructor(public readonly path: string) {
+  constructor(public readonly path: string, private readonly groupService: GroupService) {
     this.initRoutes();
-    this.groupService = container.resolve(GroupService);
   }
 
   public initRoutes(): void {
@@ -30,7 +27,10 @@ export class GroupController implements IControllerBase {
     this.router.put('/:id', this.updateGroup);
   }
 
-  private getGroupList: (req: Request, res: Response) => void = async (req: Request, res: Response) => {
+  private getGroupList: (req: Request, res: Response) => void = async (
+    req: Request,
+    res: Response,
+  ) => {
     try {
       const groups: IGroup[] = await this.groupService.getAllGroups();
 
@@ -40,7 +40,10 @@ export class GroupController implements IControllerBase {
     }
   };
 
-  private getGroupById: (req: Request, res: Response) => void = async (req: Request, res: Response) => {
+  private getGroupById: (req: Request, res: Response) => void = async (
+    req: Request,
+    res: Response,
+  ) => {
     try {
       const group: IGroup | null = await this.groupService.getGroupById(req.params.id);
 
@@ -70,7 +73,9 @@ export class GroupController implements IControllerBase {
 
   private updateGroup: (req: Request, res: Response) => void = (req: Request, res: Response) => {
     try {
-      const result: Joi.ValidationResult = groupUpdateValidationSchema(req.params.id).validate(req.body);
+      const result: Joi.ValidationResult = groupUpdateValidationSchema(req.params.id).validate(
+        req.body,
+      );
 
       if (result.error) {
         res.status(status.BAD_REQUEST).send(result.error.message);
@@ -90,11 +95,20 @@ export class GroupController implements IControllerBase {
     }
   };
 
-  private addUsersToGroup: (req: Request, res: Response) => void = (req: Request, res: Response) => {
+  private addUsersToGroup: (req: Request, res: Response) => void = (
+    req: Request,
+    res: Response,
+  ) => {
     try {
-      res.status(status.NO_CONTENT).send(this.groupService.addUsersToGroup(req.params.id, req.body.users));
+      res
+        .status(status.NO_CONTENT)
+        .send(this.groupService.addUsersToGroup(req.params.id, req.body.users));
     } catch (error) {
-      logger.error(`addUsersToGroup(${req.params.id}, ${JSON.stringify(req.body.users)}): ${JSON.stringify(error)}`);
+      logger.error(
+        `addUsersToGroup(${req.params.id}, ${JSON.stringify(req.body.users)}): ${JSON.stringify(
+          error,
+        )}`,
+      );
     }
   };
 }
