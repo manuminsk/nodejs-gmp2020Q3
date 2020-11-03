@@ -1,13 +1,11 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { Op } from 'sequelize';
-import { singleton } from 'tsyringe';
 
 import { CommonConfig } from '../common/common.config';
 import { IUser } from '../models/user.interface';
 import { UserModel } from '../models/user.model';
 
-@singleton()
 export class UserService {
   private jwtSecret: string;
 
